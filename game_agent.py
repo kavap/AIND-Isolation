@@ -213,7 +213,13 @@ class MinimaxPlayer(IsolationPlayer):
             raise SearchTimeout()
 
         # TODO: finish this function!
-        raise NotImplementedError
+        # PHK - Change this ...I have implemented Random player for now         
+        legal_moves = game.get_legal_moves()
+        if not legal_moves:
+            return (-1, -1)
+        return legal_moves[random.randint(0, len(legal_moves) - 1)]
+
+        #raise NotImplementedError
 
 
 class AlphaBetaPlayer(IsolationPlayer):
@@ -255,7 +261,12 @@ class AlphaBetaPlayer(IsolationPlayer):
         self.time_left = time_left
 
         # TODO: finish this function!
-        raise NotImplementedError
+        # PHK - Change this ...I have implemented Random player for now 
+        legal_moves = game.get_legal_moves()
+        if not legal_moves:
+            return (-1, -1)
+        return legal_moves[random.randint(0, len(legal_moves) - 1)]
+        #raise NotImplementedError
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as

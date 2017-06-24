@@ -50,7 +50,7 @@ def play_round(cpu_agent, test_agents, win_counts, num_matches):
 
         games = sum([[Board(cpu_agent.player, agent.player),
                       Board(agent.player, cpu_agent.player)]
-                    for agent in test_agents], [])
+                    for agent in test_agents], [])    #https://coderwall.com/p/tszoiq/python-sum-convert-list-of-lists-to-a-list
 
         # initialize all games with a random move and response
         for _ in range(2):
@@ -99,13 +99,19 @@ def play_matches(cpu_agents, test_agents, num_matches):
 
         print("{!s:^9}{:^13}".format(idx + 1, agent.name), end="", flush=True)
 
+
         counts = play_round(agent, test_agents, wins, num_matches)
+
+
         total_timeouts += counts[0]
         total_forfeits += counts[1]
+
         total_wins = update(total_wins, wins)
+
         _total = 2 * num_matches
         round_totals = sum([[wins[agent.player], _total - wins[agent.player]]
                             for agent in test_agents], [])
+        
         print(" {:^5}| {:^5} {:^5}| {:^5} {:^5}| {:^5} {:^5}| {:^5}"
               .format(*round_totals))
 

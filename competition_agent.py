@@ -7,6 +7,7 @@ champions) in a tournament.
 import random
 
 
+
 class SearchTimeout(Exception):
     """Subclass base exception for code clarity. """
     pass
@@ -94,4 +95,10 @@ class CustomPlayer:
             (-1, -1) if there are no available legal moves.
         """
         # OPTIONAL: Finish this function!
-        raise NotImplementedError
+        # PHK - Change this ...I have implemented Random player for now         
+        legal_moves = game.get_legal_moves()
+        if not legal_moves:
+            return (-1, -1)
+        return legal_moves[random.randint(0, len(legal_moves) - 1)]
+
+ #       raise NotImplementedError
