@@ -106,35 +106,42 @@ class TestMinMaxPlayer(unittest.TestCase):
         self.reset_boards()
 
     def test_can_make_one_valid_move(self):
-        self.assertEqual(self.game_board_1.play(60000,1)[2],"game-on","Your agent cant make even a single valid move")
+        self.assertEqual(self.game_board_1.play(2000,1)[2],"game-on","Your agent cant make even a single valid move")
 
     def test_makes_all_legal_moves_throughout_the_game(self):
-        self.assertNotEqual(self.game_board_1.play(10000,float("inf"))[2],"illegal move","Your agent made an illegal move")
+        self.assertNotEqual(self.game_board_1.play(2000,float("inf"))[2],"illegal move","Your agent made an illegal move")
 
     def test_gracefully_indicates_victory_or_loss(self):
-        self.assertIn(self.game_board_1.play(10000,float("inf"))[2],["player_1 wins","player_2 wins"],"Your agent timed out or made illegal move")
-
-    def test_can_complete_move_in_1_min(self):
-        self.assertNotEqual(self.game_board_1.play(60000,float("inf"))[2],"timeout","Your agent timed out")
+        self.reset_boards()
+        self.assertIn(self.game_board_1.play(2000,float("inf"))[2],["player_1 wins","player_2 wins"],"Your agent timed out or made illegal move")
 
     def test_can_complete_move_in_5_sec(self):
+        self.reset_boards()
         self.assertNotEqual(self.game_board_1.play(5000,float("inf"))[2],"timeout","Your agent timed out")
 
     def test_can_complete_move_in_2_sec(self):
+        self.reset_boards()
         self.assertNotEqual(self.game_board_1.play(2000,float("inf"))[2],"timeout","Your agent timed out")
 
     def test_can_search_to_depth_5_in_2_sec(self):
+        self.reset_boards()
         self.assertNotEqual(self.game_board_3.play(2000,float("inf"))[2],"timeout","Your agent timed out")
 
     def test_can_search_to_depth_10_in_2_sec(self):
+        self.reset_boards()
         self.assertNotEqual(self.game_board_4.play(2000,float("inf"))[2],"timeout","Your agent timed out")
 
+    def test_wins_using_scoring_function(self):
+        self.reset_boards()
+        self.assertEqual(self.game_board_1.play(2000,float("inf"))[2],"player_1 wins","Your agent didn't win with scoring function")
+
     def test_wins_using_scoring_function_2(self):
+        self.reset_boards()
         self.assertEqual(self.game_board_5.play(2000,float("inf"))[2],"player_1 wins","Your agent didn't win with scoring function 2")
 
     def test_wins_using_scoring_function_3(self):
+        self.reset_boards()
         self.assertEqual(self.game_board_6.play(2000,float("inf"))[2],"player_1 wins","Your agent didn't win with scoring function 3")
-
 
 if __name__ == '__main__':
     unittest.main()

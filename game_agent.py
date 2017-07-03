@@ -35,7 +35,13 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish main custom_score function!
-    raise NotImplementedError
+    #print("In score") ## pk remove
+
+    score = len(game.get_legal_moves(player)) - len(game.get_legal_moves(game.get_opponent(player)))
+
+    #print(score) ## pk remove
+
+    return score
 
 
 def custom_score_2(game, player):
@@ -61,7 +67,8 @@ def custom_score_2(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish custom_score2 function!
-    raise NotImplementedError
+    score = len(game.get_legal_moves(player))
+    return score
 
 
 def custom_score_3(game, player):
@@ -87,7 +94,8 @@ def custom_score_3(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish custom_score3  function!
-    raise NotImplementedError
+    score = len(game.get_legal_moves(player)) - 1.25*len(game.get_legal_moves(game.get_opponent(player)))
+    return score
 
 
 class IsolationPlayer:
@@ -214,29 +222,101 @@ class MinimaxPlayer(IsolationPlayer):
                 testing.
         """
 
-        return (2,2)
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
 
+        level_to_evaluate = 1
+        best_move_score = float("-inf")
+
+        my_allowed_moves = game.get_legal_moves()
+
+        #print(my_allowed_moves) ## pk remove
+
+        if len(my_allowed_moves) == 0:
+            return(-1,-1)
+
+        if level_to_evaluate == depth:
+            for move in my_allowed_moves:
+                move_score = self.score(game.forecast_move(move),self)
+                if move_score > best_move_score:
+                    best_move_score = move_score
+                    best_move = move
+                return best_move
+        else:
+            (move_score,best_move) = self.max_value(game,depth,level_to_evaluate)
+            return best_move
+
+
+    def max_value(self,game, depth,level_to_evaluate):
 
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: Implement simple minmax agent
-        # Check if the player has already lost
-        legal_moves = game.get_legal_moves()
-        if not legal_moves:
-            return (-1, -1)
+        #print("\nin max")  ## pk remove
+
+        #print(game.print_board()) ## pk remove
+
+        best_move_score = float("-inf")
+        best_move = (-1,-1)
+
+        my_allowed_moves = game.get_legal_moves()
+
+        if len(my_allowed_moves) == 0:
+            return (best_move_score,(-1,-1))
+
+        if level_to_evaluate == depth:
+            for move in my_allowed_moves:
+                move_score = self.score(game.forecast_move(move),self)
+                if move_score > best_move_score:
+                    best_move_score = move_score
+                    best_move = move
+                return (best_move_score,best_move)
+        else:
+            for move in my_allowed_moves:
+                #print("\n",move)## pk remove
+                (opponent_score, opponent_move) = self.min_value(game.forecast_move(move),depth,level_to_evaluate+1)
+                #print("back in max. Opp score :","inf" if opponent_score == float("inf") else opponent_score) ## pk remove
+                if opponent_score > best_move_score:
+                    best_move_score = opponent_score
+                    best_move = move
+            return (best_move_score,best_move)
 
 
-        for move in legal_moves:
+    def min_value(self,game, depth,level_to_evaluate):
 
-            if self.time_left() < self.TIMER_THRESHOLD:
-                raise SearchTimeout()
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
 
-            self.score(game.forecast_move(self,move))
+        #print("\nin min")  ## pk remove
 
-        #return legal_moves[random.randint(0, len(legal_moves) - 1)]
+        #print(game.print_board()) ## pk remove
 
-        #raise NotImplementedError
+        worst_move_score = float("inf")
+        worst_move = (-1,-1)
+
+        my_allowed_moves = game.get_legal_moves()
+
+        if len(my_allowed_moves) == 0:
+            return(worst_move_score,(-1,-1))
+
+        if level_to_evaluate == depth:
+            for move in my_allowed_moves:
+                move_score = self.score(game.forecast_move(move),self)
+                if move_score < worst_move_score:
+                    worst_move_score = move_score
+                    worst_move = move
+                return (worst_move_score,worst_move)
+        else:
+            for move in my_allowed_moves:
+                #print("\n",move)## pk remove
+                (opponent_score, opponent_move) = self.max_value(game.forecast_move(move),depth,level_to_evaluate+1)
+                #print("back in min. Opp score :","-inf" if opponent_score == float("-inf") else opponent_score) ## pk remove
+                #print("Worst move score :", worst_move_score) ## pk remove
+                if opponent_score < worst_move_score:
+                    #print("\ncomparision worked once")  ## pk remove
+                    worst_move_score = opponent_score
+                    worst_move = move
+            return (worst_move_score,worst_move)
 
 
 class AlphaBetaPlayer(IsolationPlayer):
@@ -244,6 +324,8 @@ class AlphaBetaPlayer(IsolationPlayer):
     search with alpha-beta pruning. You must finish and test this player to
     make sure it returns a good move before the search time limit expires.
     """
+
+    # TODO: Implement Iterative Deepening based AlphaBeta agent
 
     def get_move(self, game, time_left):
         """Search for the best move from the available legal moves and return a
@@ -277,8 +359,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-        # TODO: Implement Iterative Deepening based AlphaBeta agent
-        # PHK - Change this ...I have implemented Random player for now 
+        # PHK - Change this ...I have implemented Random player for now
         legal_moves = game.get_legal_moves()
         if not legal_moves:
             return (-1, -1)
