@@ -35,11 +35,8 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish main custom_score function!
-    #print("In score") ## pk remove
 
     score = len(game.get_legal_moves(player)) - len(game.get_legal_moves(game.get_opponent(player)))
-
-    #print(score) ## pk remove
 
     return score
 
@@ -121,7 +118,6 @@ class IsolationPlayer:
         timer expires.
     """
     def __init__(self, search_depth=3, score_fn=custom_score, timeout=10.):
-        # type: (object, object, object) -> object
         self.search_depth = search_depth
         self.score = score_fn
         self.time_left = None
@@ -230,8 +226,6 @@ class MinimaxPlayer(IsolationPlayer):
 
         my_allowed_moves = game.get_legal_moves()
 
-        #print(my_allowed_moves) ## pk remove
-
         if len(my_allowed_moves) == 0:
             return(-1,-1)
 
@@ -252,10 +246,6 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        #print("\nin max")  ## pk remove
-
-        #print(game.print_board()) ## pk remove
-
         best_move_score = float("-inf")
         best_move = (-1,-1)
 
@@ -273,9 +263,7 @@ class MinimaxPlayer(IsolationPlayer):
                 return (best_move_score,best_move)
         else:
             for move in my_allowed_moves:
-                #print("\n",move)## pk remove
                 (opponent_score, opponent_move) = self.min_value(game.forecast_move(move),depth,level_to_evaluate+1)
-                #print("back in max. Opp score :","inf" if opponent_score == float("inf") else opponent_score) ## pk remove
                 if opponent_score > best_move_score:
                     best_move_score = opponent_score
                     best_move = move
@@ -286,10 +274,6 @@ class MinimaxPlayer(IsolationPlayer):
 
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
-
-        #print("\nin min")  ## pk remove
-
-        #print(game.print_board()) ## pk remove
 
         worst_move_score = float("inf")
         worst_move = (-1,-1)
@@ -308,12 +292,8 @@ class MinimaxPlayer(IsolationPlayer):
                 return (worst_move_score,worst_move)
         else:
             for move in my_allowed_moves:
-                #print("\n",move)## pk remove
                 (opponent_score, opponent_move) = self.max_value(game.forecast_move(move),depth,level_to_evaluate+1)
-                #print("back in min. Opp score :","-inf" if opponent_score == float("-inf") else opponent_score) ## pk remove
-                #print("Worst move score :", worst_move_score) ## pk remove
                 if opponent_score < worst_move_score:
-                    #print("\ncomparision worked once")  ## pk remove
                     worst_move_score = opponent_score
                     worst_move = move
             return (worst_move_score,worst_move)
@@ -357,16 +337,30 @@ class AlphaBetaPlayer(IsolationPlayer):
             Board coordinates corresponding to a legal move; may return
             (-1, -1) if there are no available legal moves.
         """
-        self.time_left = time_left
+        # Iterative deepening will handle timeout and return best move available before timeout
+        # Even though time_left and TIMER_THRESHOLD are available as object variables to iterativeDeepening method
+        # I am passing them to write a move generic method
+        best_move =  self.iterativeDeepening(game, time_left, self.TIMER_THRESHOLD )
 
-        # PHK - Change this ...I have implemented Random player for now
-        legal_moves = game.get_legal_moves()
-        if not legal_moves:
-            return (-1, -1)
-        return legal_moves[random.randint(0, len(legal_moves) - 1)]
-        #raise NotImplementedError
+        return best_move
 
-    def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
+
+    def iterativeDeepening(self,game,time_left,timer_threshold):
+
+        best_move = (-1, -1)
+        try:
+            for depth in range(1000):   #Depth of 1000 should be deep enough for the isolation agent
+                if time_left() < timer_threshold:
+                    return best_move
+                level_move = self.alphabeta(game,depth+1,time_left,timer_threshold)
+                best_move = level_move
+                if level_move == (-1,-1):
+                    return (-1,-1)
+        except SearchTimeout:
+            return best_move
+
+
+    def alphabeta(self, game, depth, time_left,timer_threshold,alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as
         described in the lectures.
 
@@ -411,7 +405,94 @@ class AlphaBetaPlayer(IsolationPlayer):
                 each helper function or else your agent will timeout during
                 testing.
         """
-        if self.time_left() < self.TIMER_THRESHOLD:
+        if time_left() < timer_threshold:
             raise SearchTimeout()
-        # Handle steps after search timeout
+
+        level_to_evaluate = 1
+        best_move_score = float("-inf")
+
+        my_allowed_moves = game.get_legal_moves()
+
+        if len(my_allowed_moves) == 0:
+            return(-1,-1)
+
+        if level_to_evaluate == depth:
+            for move in my_allowed_moves:
+                move_score = self.score(game.forecast_move(move),self)
+                if move_score > best_move_score:
+                    best_move_score = move_score
+                    best_move = move
+                return best_move
+        else:
+            (move_score,best_move) = self.max_value(game,depth,level_to_evaluate,time_left,timer_threshold,alpha,beta)
+            return best_move
+
+
+
+    def max_value(self,game, depth,level_to_evaluate,time_left,timer_threshold,alpha,beta):
+
+        if time_left() < timer_threshold:
+            raise SearchTimeout()
+
+        best_move_score = float("-inf")
+        best_move = (-1,-1)
+
+        my_allowed_moves = game.get_legal_moves()
+
+        if len(my_allowed_moves) == 0:
+            return (best_move_score,(-1,-1))
+
+        if level_to_evaluate == depth:
+            for move in my_allowed_moves:
+                move_score = self.score(game.forecast_move(move),self)
+                if move_score > best_move_score:
+                    best_move_score = move_score
+                    best_move = move
+                return (best_move_score,best_move)
+        else:
+            for move in my_allowed_moves:
+                (opponent_score, opponent_move) = self.min_value(game.forecast_move(move),depth,level_to_evaluate+1,time_left,timer_threshold,alpha,beta)
+                if opponent_score > best_move_score:
+                    best_move_score = opponent_score
+                    best_move = move
+                if best_move_score >= beta:
+                    return (best_move_score,best_move)
+                else:
+                    alpha = max(best_move_score,alpha)
+            return (best_move_score,best_move)
+
+
+    def min_value(self,game, depth,level_to_evaluate,time_left,timer_threshold,alpha,beta):
+
+        if time_left() < timer_threshold:
+            raise SearchTimeout()
+
+        worst_move_score = float("inf")
+        worst_move = (-1,-1)
+
+        my_allowed_moves = game.get_legal_moves()
+
+        if len(my_allowed_moves) == 0:
+            return(worst_move_score,(-1,-1))
+
+        if level_to_evaluate == depth:
+            for move in my_allowed_moves:
+                move_score = self.score(game.forecast_move(move),self)
+                if move_score < worst_move_score:
+                    worst_move_score = move_score
+                    worst_move = move
+                return (worst_move_score,worst_move)
+        else:
+            for move in my_allowed_moves:
+                (opponent_score, opponent_move) = self.max_value(game.forecast_move(move),depth,level_to_evaluate+1,time_left,timer_threshold,alpha,beta)
+                if opponent_score < worst_move_score:
+                    worst_move_score = opponent_score
+                    worst_move = move
+                if worst_move_score <= alpha:
+                    return (worst_move_score,worst_move)
+                else:
+                    beta = min(worst_move_score,beta)
+            return (worst_move_score,worst_move)
+
+
 

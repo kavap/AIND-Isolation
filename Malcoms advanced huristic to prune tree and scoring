@@ -1,17 +1,17 @@
 * Board symmetry
-		- Build eqivaluent moves mapping
-		- Remember solved boards in hash tables
-		- Before expanding, lookup in hash table if equivalent tree was solved (lookup based on equivalent moves mapping)
-		- Use Board symmetry upto 3 level deep (after that it doesnt provide much advantage)
-* Evaluation function
-	- Partitions detection	
-* Opening book
-	- player 2 usually wins
+		- Build equivalent moves mapping using board symmetry
+		- Remember equivalent boards, moves tables and solved boards in hash tables
+		- Before expanding and tree, lookup in hash table if equivalent tree was solved (lookup based on equivalent moves mapping)
+		- Use Board symmetry up to 3 level deep (after that it doesnt provide much advantage)
+* Evaluation functions are very important
+	- e.g. an evaluation function that detects partitions
+* Develop and use opening book of plays
+	- player 2 usually wins so try to be player 2
 	- If I am player 1
-		- Take center if I am player 1
-		- Then play reflection of player 2 moves in subsequent moves
+		- Occupy center cell as first move
+		- Then play reflection of player 2's moves in my subsequent moves
 	- If I am player 2 and player 1 has taken center and is going to move to reflect my moves
-		- goto a position where player 1 can't reflect my moves
+		- go to a position where player 1 can't reflect my moves (find out 8 moves that have no reflections)
 	- If I am player 2 and player 1 hasn't taken center square
 		- take center square
 
