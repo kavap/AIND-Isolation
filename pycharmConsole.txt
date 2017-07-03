@@ -9,5 +9,27 @@
 6 4 2 |3 7 9 |8 1 5 
 9 3 5 |2 8 1 |7 6 4 
 7 1 8 |5 6 4 |9 2 3 
-2017-06-24 17:13:07.089 python[44823:1019322] 17:13:07.088 WARNING:  140: This application, or a library it uses, is using the deprecated Carbon Component Manager for hosting Audio Units. Support for this will be removed in a future release. Also, this makes the host incompatible with version 3 audio units. Please transition to the API's in AudioComponent.h.
-We could not visualize your board due to a pygame issue. Not a problem! It is not a requirement.
+2017-06-24 17:13:07.08Traceback (most recent call last):
+  File "/Applications/PyCharm CE.app/Contents/helpers/pydev/pydevd.py", line 1591, in <module>
+    globals = debugger.run(setup['file'], None, None, is_module)
+  File "/Applications/PyCharm CE.app/Contents/helpers/pydev/pydevd.py", line 1018, in run
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+  File "/Applications/PyCharm CE.app/Contents/helpers/pydev/_pydev_imps/_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "/Users/praful.kava/Documents/Personal/Udacity/AIND/AIND-Sudoku/solution.py", line 293, in <module>
+    print()
+  File "/Users/praful.kava/Documents/Personal/Udacity/AIND/AIND-Sudoku/solution.py", line 279, in main
+    'boxes': boxes,
+  File "/Users/praful.kava/Documents/Personal/Udacity/AIND/AIND-Sudoku/solution.py", line 234, in solve
+    for box,value in values.items():
+  File "/Users/praful.kava/Documents/Personal/Udacity/AIND/AIND-Sudoku/solution.py", line 195, in search
+    # Sanity check, return False if there is a box with zero available values:
+  File "/Users/praful.kava/Documents/Personal/Udacity/AIND/AIND-Sudoku/solution.py", line 195, in search
+    # Sanity check, return False if there is a box with zero available values:
+  File "/Applications/PyCharm CE.app/Contents/helpers/pydev/_pydevd_bundle/pydevd_frame.py", line 721, in trace_dispatch
+    self.do_wait_suspend(thread, frame, event, arg)
+  File "/Applications/PyCharm CE.app/Contents/helpers/pydev/_pydevd_bundle/pydevd_frame.py", line 125, in do_wait_suspend
+    self._args[0].do_wait_suspend(*args, **kwargs)
+  File "/Applications/PyCharm CE.app/Contents/helpers/pydev/pydevd.py", line 766, in do_wait_suspend
+    time.sleep(0.01)
+KeyboardInterrupt

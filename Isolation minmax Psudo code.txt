@@ -1,0 +1,58 @@
+function ALPHA-BETA-SEARCH(state) returns an action
+ v ← MAX-VALUE(state, −∞, +∞)
+ return the action in ACTIONS(state) with value v
+
+## Add depth constraint 
+function ALPHA-BETA-SEARCH(current-board,allowed-search-depth) returns best-move
+ 	level-to-evaluate = 1
+ 	if (level-to-evaluate == allowed-search-depth) :
+ 		return move that would create branch with highest score
+ 	(best-move-score,best-move) = MAX-VALUE(current-board, float("-inf"), float("inf"),allowed-search-depth,level-to-evaluate)
+ 	return best-move
+
+
+
+
+function MAX-VALUE(state, α, β) returns a utility value
+ if TERMINAL-TEST(state) the return UTILITY(state)
+ v ← −∞
+ for each a in ACTIONS(state) do
+   v ← MAX(v, MIN-VALUE(RESULT(state, a), α, β))
+   if v ≥ β then return v
+   α ← MAX(α, v)
+ return v
+
+##
+function MAX-VALUE(board, α, β, allowed-search-depth,level-to-evaluate)  
+ if level-to-evaluate == allowed-search-depth :
+		best-move = move that would create branch with highest score
+		best-move-score = score of branch created by best-move
+		{ return ( max(score for each of move allowed to me), move with that would result in the board with max score, resulting board )}
+ v ← −∞
+ for move in my-allowed-moves do
+   v ← MAX(v, MIN-VALUE(board_resulting_from(move), α, β, allowed-search-depth,level-to-evaluate + 1).v)
+   if v ≥ β then return (v)
+   α ← MAX(α, v)
+ return v
+
+
+
+
+function MIN-VALUE(state, α, β) returns a utility value
+ if TERMINAL-TEST(state) the return UTILITY(state)
+ v ← +∞
+ for each a in ACTIONS(state) do
+   v ← MIN(v, MAX-VALUE(RESULT(state, a), α, β))
+   if v ≤ α then return v
+   β ← MIN(β, v)
+ return v
+
+##
+function MIN-VALUE(board, α, β, allowed-search-depth,level-to-evaluate)  
+ if TERMINAL-TEST(state) the return UTILITY(state)
+ v ← +∞
+ for each a in ACTIONS(state) do
+   v ← MIN(v, MAX-VALUE(RESULT(state, a), α, β))
+   if v ≤ α then return v
+   β ← MIN(β, v)
+ return v

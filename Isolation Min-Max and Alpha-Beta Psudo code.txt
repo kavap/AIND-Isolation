@@ -1,0 +1,343 @@
+################################# MIN - MAX DECISION ####################################
+
+
+
+######## Generic Min-Max Psudo code from : https://github.com/aimacode/aima-pseudocode/blob/master/md/Minimax-Decision.md ########
+
+
+function MINIMAX-DECISION(state) returns an action
+ return arg max a ∈ ACTIONS(s) MIN-VALUE(RESULT(state, a))
+
+function MAX-VALUE(state) returns a utility value
+ if TERMINAL-TEST(state) then return UTILITY(state)
+ v ← −∞
+ for each a in ACTIONS(state) do
+   v ← MAX(v, MIN-VALUE(RESULT(state, a)))
+ return v
+
+function MIN-VALUE(state) returns a utility value
+ if TERMINAL-TEST(state) then return UTILITY(state)
+ v ← ∞
+ for each a in ACTIONS(state) do
+   v ← MIN(v, MAX-VALUE(RESULT(state, a)))
+ return v
+
+
+
+######## Psudo code specific to Game of Isolation with added Depth limited Search constraint. This Psudo code leverages Python Symantics. ########
+
+def MINIMAX-DECISION(current-board,allowed-search-depth)  
+## - In this function "I" = (MaxPlayer) = "Praful's agent". Read this function from "My" perspective.
+## - This function would be called by the agent running game between "Me" and my "Opponent"(Computer/Human :) )
+ 	
+ 	level-to-evaluate = 1
+ 	my-allowed-moves = current-board.get_legal_moves()
+
+ 	# If I don't have any more moves left on board given to me, I have lost. Send move that signals my loss
+ 	if (my-allowed-moves == None):
+ 		return (-1,-1)     
+
+ 	if (level-to-evaluate == allowed-search-depth) :
+
+	# I am at one level above deepest allowable level. So :
+ 	# I will evaluate children boards of current level and pick the board that has best score for me and return the move that 
+ 	# creates board with best score.
+
+ 		best-move-score = float("-inf")
+ 		for move in my-allowed-moves :
+ 			if score(board_resulting_from(move)) > best-move-score:
+ 				best-move-score = score(board_resulting_from(move)) 
+ 				best-move = move
+ 		return best-move
+
+  	else:
+
+  	# I will evaluate all subtrees (upto allowed-depth) created from the board given to me. Pick the branch that would provide 
+  	# me with highest possible score when I play till allowed-depth
+  	
+  		(best-move-score,best-move) = MAX-VALUE(current-board,allowed-search-depth,level-to-evaluate)
+ 		return best-move
+
+
+def MAX-VALUE(board, allowed-search-depth,level-to-evaluate) :
+## - In this function "I" = (MaxPlayer) = "Praful's agent". Read this function from "My" perspective.
+## - My goal is to pick from all available game subtrees (that have been evaluated till allowable depth), the game subtree that 
+##   provides higest possible potential score to "Me" when I play till allowable depth along that subtree (assuming my
+##   opponent would pick best available move to him/her/it when it's his/her/it's turn).
+## - "My" "Opponent" in this function is (MinPlayer) = adversary of "Praful's agent"
+
+ 	best-move-score = float("-inf")
+	my-allowed-moves = current-board.get_legal_moves()
+
+ 	# If I don't have any more moves left on board given to me, I have lost. Send move that signals my loss
+ 	if (my-allowed-moves == None):
+ 		return (float("-inf"),(-1,-1))  # Note that the move part of return tuple wouldnt be used   	
+
+	if level-to-evaluate == allowed-search-depth :
+	
+	# I am at one level above deepest allowable level. So :
+ 	# I will evaluate children boards of current level and pick the board that has best score for me and return the move that 
+ 	# creates board with best score.
+
+ 		for move in my-allowed-moves :
+
+ 			if score(board_resulting_from(move)) > best-move-score:
+ 				best-move-score = score(board_resulting_from(move)) 
+ 				best-move = move
+ 		return best-move
+
+    for move in my-allowed-moves:
+		(opponent-score,opponent-move) = MIN-VALUE(board_resulting_from(move), allowed-search-depth,level-to-evaluate + 1)
+		if opponent-score > best-move-score :
+			best-move-score = opponent-score
+			best-move = move
+
+    return (best-move-score,best-move)
+
+
+def MIN-VALUE(board, allowed-search-depth,level-to-evaluate) :
+## - In this function "I" = (MinPlayer) = adversary of "Praful's agent". Read this function from "My" perspective.
+## - My goal is to pick from all available game subtrees (that have been evaluated till allowable depth), the game subtree that 
+##   provides lowest possible potential score to (MaxPlayer) "Praful's agent" when it plays till allowable depth along that 
+##   subtree (assuming (MaxPlayer) Praful's agent would pick best available move to opponent would pick best available move to
+##    it at it's turn).
+## - "My" "Opponent" in this function is (MaxPlayer) = "Praful's agent"
+## - worst-score in this function refers to the lowest score for my "Opponent" (same for worst-move)
+
+ 	worst-move-score = float("inf") #My focus is to pick a game subtree which provides worst potential for MaxPlayer
+	my-allowed-moves = current-board.get_legal_moves()
+
+ 	# If I don't have any more moves left on board given to me, I have lost. Send move that signals my loss
+ 	if (my-allowed-moves == None):
+ 		return (float("inf"),(-1,-1))  # Note that the move part of return tuple wouldnt be used    		
+
+	if level-to-evaluate == allowed-search-depth :
+	
+	# I am at one level above deepest allowable level. So :
+ 	# I will evaluate children boards of current level and pick the board that has worst score for (MaxPlayer) "Praful's Agent" 
+ 	# and return the move that creates board with worst score.
+ 	
+
+ 		worst-move = (-1,-1)
+
+ 		for move in my-allowed-moves :
+
+ 			if score(board_resulting_from(move)) < worst-move-score:
+ 				worst-move-score = score(board_resulting_from(move)) 
+ 				worst-move = move
+
+ 		return worst-move
+
+    for move in my-allowed-moves:
+		(opponent-score,opponent-move) = MAX-VALUE(board_resulting_from(move), allowed-search-depth,level-to-evaluate + 1)
+		if opponent-score < worst-move-score :
+			worst-move-score = opponent-score
+			worst-move = move
+
+    return (worst-move-score,worst-move)
+
+
+
+
+################################# ALPHA - BETA PRUNING ####################################
+
+
+
+######## Generic Alpha-Beta Prunning Psudo code from : https://github.com/aimacode/aima-pseudocode/blob/master/md/Alpha-Beta-Search.md ########
+
+function ALPHA-BETA-SEARCH(state) returns an action
+ v ← MAX-VALUE(state, −∞, +∞)
+ return the action in ACTIONS(state) with value v
+
+
+function MAX-VALUE(state, α, β) returns a utility value
+ if TERMINAL-TEST(state) the return UTILITY(state)
+ v ← −∞
+ for each a in ACTIONS(state) do
+   v ← MAX(v, MIN-VALUE(RESULT(state, a), α, β))
+   if v ≥ β then return v
+   α ← MAX(α, v)
+ return v
+
+function MIN-VALUE(state, α, β) returns a utility value
+ if TERMINAL-TEST(state) the return UTILITY(state)
+ v ← +∞
+ for each a in ACTIONS(state) do
+   v ← MIN(v, MAX-VALUE(RESULT(state, a), α, β))
+   if v ≤ α then return v
+   β ← MIN(β, v)
+ return v
+
+
+
+######## Psudo code specific to Game of Isolation with added Depth limited Search constraint. This Psudo code leverages Python Symantics. ########
+
+def ALPHA-BETA-SEARCH(current-board,allowed-search-depth)  
+## - In this function "I" = (MaxPlayer) = "Praful's agent". Read this function from "My" perspective.
+## - This function would be called by the agent running game between "Me" and my "Opponent"(Computer/Human :) )
+ 	
+ 	level-to-evaluate = 1
+ 	α-curr-level  = float("-inf") 
+ 	β-curr-level  = float("inf") 
+ 	my-allowed-moves = current-board.get_legal_moves()
+
+ 	# If I don't have any more moves left on board given to me, I have lost. Send move that signals my loss
+ 	if (my-allowed-moves == None):
+ 		return (-1,-1)     
+
+ 	if (level-to-evaluate == allowed-search-depth) :
+
+	# I am at one level above deepest allowable level. So :
+ 	# I will evaluate children boards of current level and pick the board that has best score for me and return the move that 
+ 	# creates board with best score.
+
+ 	# I know since I am at top of min-max call chain. So, there's no question of "β-prunning" ( β-curr-level  = float("inf") ).
+
+ 		best-move-score = float("-inf")
+ 		best-move = (-1,-1)
+ 		for move in my-allowed-moves :
+ 			if score(board_resulting_from(move)) > best-move-score:
+ 				best-move-score = score(board_resulting_from(move)) 
+ 				best-move = move
+ 		return best-move
+
+  	else:
+
+  	# I will evaluate all subtrees (upto allowed-depth) created from the board given to me. Pick the branch that would provide 
+  	# me with highest possible score when I play till allowed-depth
+  	
+  		(best-move-score,best-move) = MAX-VALUE(current-board,α-curr-level,β-curr-level,allowed-search-depth,level-to-evaluate)
+ 		return best-move
+
+def MAX-VALUE(board, α-prev-level, β-prev-level, allowed-search-depth,level-to-evaluate) :
+## - In this function "I" = (MaxPlayer) = "Praful's agent". Read this function from "My" perspective.
+## - My goal is to pick from all available game subtrees (that have been evaluated till allowable depth), the game subtree that 
+##   provides higest possible potential score to "Me" when I play till allowable depth along that subtree (assuming my
+##   opponent would pick best available move to him/her/it when it's his/her/it's turn).
+## - "My" "Opponent" in this function is (MinPlayer) = adversary of "Praful's agent"
+
+ 	best-move-score = float("-inf")
+ 	α-curr-level  = α-prev-level 
+ 	β-curr-level  = β-prev-level
+	my-allowed-moves = current-board.get_legal_moves()
+
+ 	# If I don't have any more moves left on board given to me, I have lost. Send move that signals my loss
+ 	if (my-allowed-moves == None):
+ 		return (float("-inf"),(-1,-1))  # Note that the move part of return tuple wouldnt be used   	
+
+	if level-to-evaluate == allowed-search-depth :
+	
+	# I am at one level above deepest allowable level. So :
+ 	# I will evaluate children boards of current level and pick the board that has best score for me and return the move that 
+ 	# creates board with best score.
+
+ 		best-move = (-1,-1)
+
+ 		for move in my-allowed-moves :
+
+		## My opponent (MinPlayer) at previous level has better option (other branch with lower score) than this substree
+		## (indicated to me when my opponent passed "β-prev-level" to me and my opponent would never select this substree. 
+		## So, I would not evaluate rest of the branches in this subtree 
+		## (I call this "β-pruning" )
+
+
+    		if best-move-score ≥ β-curr-level: 
+				return (best-move-score,best-move)
+
+ 			if score(board_resulting_from(move)) > best-move-score:
+ 				best-move-score = score(board_resulting_from(move)) 
+ 				best-move = move
+ 		return best-move
+
+    for move in my-allowed-moves:
+		(opponent-score,opponent-move) = MIN-VALUE(board_resulting_from(move), α-curr-level, β-curr-level, allowed-search-depth,level-to-evaluate + 1)
+		if opponent-score > best-move-score :
+			best-move-score = opponent-score
+			best-move = move
+
+		## My opponent (MinPlayer) at previous level has better option (other branch with lower score) than this substree
+		## (indicated to me when my opponent passed "β-prev-level" to me and my opponent would never select this substree. 
+		## So, I would not evaluate rest of the branches in this subtree 
+		## (I call this "β-pruning" )
+
+    	if best-move-score ≥ β-curr-level: 
+			return (best-move-score,best-move)
+
+    	α-curr-level = MAX(α-curr-level, best-move-score)
+
+    return (best-move-score,best-move)
+
+def MIN-VALUE(board, α-prev-level, β-prev-level, allowed-search-depth,level-to-evaluate) :
+## - In this function "I" = (MinPlayer) = adversary of "Praful's agent". Read this function from "My" perspective.
+## - My goal is to pick from all available game subtrees (that have been evaluated till allowable depth), the game subtree that 
+##   provides lowest possible potential score to (MaxPlayer) "Praful's agent" when it plays till allowable depth along that 
+##   subtree (assuming (MaxPlayer) Praful's agent would pick best available move to opponent would pick best available move to
+##    it at it's turn).
+## - "My" "Opponent" in this function is (MaxPlayer) = "Praful's agent"
+## - worst-score in this function refers to the lowest score for my "Opponent" (same for worst-move)
+
+ 	worst-move-score = float("inf") #My focus is to pick a game subtree which provides worst potential for MaxPlayer
+ 	α-curr-level  = α-prev-level 
+ 	β-curr-level  = β-prev-level
+	my-allowed-moves = current-board.get_legal_moves()
+
+	if level-to-evaluate == allowed-search-depth :
+
+ 	# If I don't have any more moves left on board given to me, I have lost. Send move that signals my loss
+ 	if (my-allowed-moves == None):
+ 		return (float("inf"),(-1,-1))  # Note that the move part of return tuple wouldnt be used    		
+	
+	# I am at one level above deepest allowable level. So :
+ 	# I will evaluate children boards of current level and pick the board that has worst score for (MaxPlayer) "Praful's Agent" 
+ 	# and return the move that creates board with worst score.
+ 	
+
+ 		worst-move = (-1,-1)
+
+ 		for move in my-allowed-moves :
+
+		## My opponent (MaxPlayer) at previous level has better option (other branch with higher score) than this substree
+		## (indicated to me when my opponent passed "α-prev-level" to me and my opponent would never select this substree. 
+		## So, I would not evaluate rest of the branches in this subtree 
+		## (I call this "α-pruning" )
+
+
+    		if worst-move-score ≤ α-curr-level: 
+				return (worst-move-score,worst-move)
+
+ 			if score(board_resulting_from(move)) < worst-move-score:
+ 				worst-move-score = score(board_resulting_from(move)) 
+ 				worst-move = move
+ 		return worst-move
+
+    for move in my-allowed-moves:
+		(opponent-score,opponent-move) = MAX-VALUE(board_resulting_from(move), α-curr-level, β-curr-level, allowed-search-depth,level-to-evaluate + 1)
+		if opponent-score < worst-move-score :
+			worst-move-score = opponent-score
+			worst-move = move
+
+		## My opponent (MaxPlayer) at previous level has better option (other branch with higher score) than this substree
+		## (indicated to me when my opponent passed "α-prev-level" to me and my opponent would never select this substree. 
+		## So, I would not evaluate rest of the branches in this subtree 
+		## (I call this "α-pruning" )
+
+    		if worst-move-score ≤ α-curr-level: 
+				return (worst-move-score,worst-move)
+
+    	β-curr-level = MIN(β-curr-level, worst-move-score)
+
+    return (worst-move-score,worst-move)
+
+######## Git checkin this version
+
+######## Psudo code specific to Game of Isolation with added Iterative Deepening. This Psudo code leverages Python Symantics. ########
+
+######## Git checkin this version
+
+
+######## Psudo code specific to Game of Isolation with added Iterative Deepening, Memoization and Game Board Symmetry, Opening Book. This Psudo code leverages Python Symantics. ########
+
+######## Git checkin this version
+
+
+

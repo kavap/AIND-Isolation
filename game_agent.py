@@ -34,7 +34,7 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
+    # TODO: finish main custom_score function!
     raise NotImplementedError
 
 
@@ -60,7 +60,7 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
+    # TODO: finish custom_score2 function!
     raise NotImplementedError
 
 
@@ -86,7 +86,7 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
+    # TODO: finish custom_score3  function!
     raise NotImplementedError
 
 
@@ -113,6 +113,7 @@ class IsolationPlayer:
         timer expires.
     """
     def __init__(self, search_depth=3, score_fn=custom_score, timeout=10.):
+        # type: (object, object, object) -> object
         self.search_depth = search_depth
         self.score = score_fn
         self.time_left = None
@@ -166,6 +167,9 @@ class MinimaxPlayer(IsolationPlayer):
 
         except SearchTimeout:
             pass  # Handle any actions required after timeout as needed
+        """ In this case, we are simply letting the SearchTimeout return (-1,-1) [forfaiting the game]
+        """
+
 
         # Return the best move from the last completed search iteration
         return best_move
@@ -209,15 +213,28 @@ class MinimaxPlayer(IsolationPlayer):
                 each helper function or else your agent will timeout during
                 testing.
         """
+
+        return (2,2)
+
+
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        # PHK - Change this ...I have implemented Random player for now         
+        # TODO: Implement simple minmax agent
+        # Check if the player has already lost
         legal_moves = game.get_legal_moves()
         if not legal_moves:
             return (-1, -1)
-        return legal_moves[random.randint(0, len(legal_moves) - 1)]
+
+
+        for move in legal_moves:
+
+            if self.time_left() < self.TIMER_THRESHOLD:
+                raise SearchTimeout()
+
+            self.score(game.forecast_move(self,move))
+
+        #return legal_moves[random.randint(0, len(legal_moves) - 1)]
 
         #raise NotImplementedError
 
@@ -260,7 +277,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-        # TODO: finish this function!
+        # TODO: Implement Iterative Deepening based AlphaBeta agent
         # PHK - Change this ...I have implemented Random player for now 
         legal_moves = game.get_legal_moves()
         if not legal_moves:
@@ -315,6 +332,5 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
+        # Handle steps after search timeout
 
-        # TODO: finish this function!
-        raise NotImplementedError

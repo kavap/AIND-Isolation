@@ -34,6 +34,7 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
+    # TODO: finish custom_score function for competetive agent !
     raise NotImplementedError
 
 
@@ -100,5 +101,9 @@ class CustomPlayer:
         if not legal_moves:
             return (-1, -1)
         return legal_moves[random.randint(0, len(legal_moves) - 1)]
+        #       raise NotImplementedError
+        # TODO : Implement Board Symmetry and Memoization
+        # TODO : Implement Aphabeta strategy
+        # TODO : Implement Iterative Deepening
 
- #       raise NotImplementedError
+        # TODO : Test my competition agent by participating in "Tournament"
