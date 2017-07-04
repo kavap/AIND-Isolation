@@ -139,19 +139,3 @@ function MIN-VALUE(state,α,β,allowed-search-depth,time_left_calculator,safe_ti
 
 
 
-######## Psudo code specific to Game of Isolation with added Depth limited Search constraint. This Psudo code leverages Python Symantics. ########
-
-
-######## Git checkin this version
-
-######## Psudo code specific to Game of Isolation with added Iterative Deepening. This Psudo code leverages Python Symantics. ########
-
-######## Git checkin this version
-
-
-######## Psudo code specific to Game of Isolation with added Iterative Deepening, Memoization and Game Board Symmetry, Opening Book. This Psudo code leverages Python Symantics. ########
-
-######## Git checkin this version
-
-
-

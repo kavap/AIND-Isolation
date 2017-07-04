@@ -349,14 +349,13 @@ class AlphaBetaPlayer(IsolationPlayer):
             for depth in range(1000):   #Depth of 1000 should be deep enough for the isolation agent
                 if self.time_left() < self.TIMER_THRESHOLD:
                     return best_move
-                level_move = self.alphabeta(game,depth)
+                level_move = self.alphabeta(game,depth+1)
                 best_move = level_move
                 if level_move == (-1,-1):
                     return (-1,-1)
         except SearchTimeout:
-            pass
-            #print("timeout",best_move)
-        return best_move
+            print("timeout",best_move)
+            return best_move
 
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
@@ -404,11 +403,10 @@ class AlphaBetaPlayer(IsolationPlayer):
                 each helper function or else your agent will timeout during
                 testing.
         """
-        print("in alphabeta")
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        level_to_evaluate = 0
+        level_to_evaluate = 1
         best_move_score = float("-inf")
 
         my_allowed_moves = game.get_legal_moves()
@@ -418,8 +416,6 @@ class AlphaBetaPlayer(IsolationPlayer):
 
         if level_to_evaluate == depth:
             for move in my_allowed_moves:
-                if self.time_left() < self.TIMER_THRESHOLD:
-                    raise SearchTimeout()
                 move_score = self.score(game.forecast_move(move),self)
                 if move_score > best_move_score:
                     best_move_score = move_score
@@ -432,8 +428,6 @@ class AlphaBetaPlayer(IsolationPlayer):
 
 
     def max_value(self,game, depth,level_to_evaluate,alpha,beta):
-
-        print("in max")
 
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
@@ -448,8 +442,6 @@ class AlphaBetaPlayer(IsolationPlayer):
 
         if level_to_evaluate == depth:
             for move in my_allowed_moves:
-                if self.time_left() < self.TIMER_THRESHOLD:
-                    raise SearchTimeout()
                 move_score = self.score(game.forecast_move(move),self)
                 if move_score > best_move_score:
                     best_move_score = move_score
@@ -470,8 +462,6 @@ class AlphaBetaPlayer(IsolationPlayer):
 
     def min_value(self,game, depth,level_to_evaluate,alpha,beta):
 
-        print("in min")
-
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
@@ -485,8 +475,6 @@ class AlphaBetaPlayer(IsolationPlayer):
 
         if level_to_evaluate == depth:
             for move in my_allowed_moves:
-                if self.time_left() < self.TIMER_THRESHOLD:
-                    raise SearchTimeout()
                 move_score = self.score(game.forecast_move(move),self)
                 if move_score < worst_move_score:
                     worst_move_score = move_score
