@@ -297,31 +297,27 @@ class MinimaxPlayer(IsolationPlayer):
 class AlphaBetaPlayer(IsolationPlayer):
 
     def get_move(self, game, time_left):
-        best_move = (-1,-1)
         self.time_left = time_left
-        self.depth = 100
-        try :
-            for depth_limit in range(self.depth):
-                best_move =  self.alphabeta(game,depth_limit+1) # Depth of 100 should be deep enough for the isolation agent
-                if best_move == (-1,-1):
-                    break
-        except SearchTimeout:
-            pass
+        best_move =  self.alphabeta(game,100) # Depth of 100 should be deep enough for the isolation agent
         return best_move
 
-    def alphabeta(self, game, depth_limit, alpha=float("-inf"), beta=float("inf")):
-
+    def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         best_move = (-1, -1)
 
         my_allowed_moves = game.get_legal_moves()
         if len(my_allowed_moves) == 0:
             return best_move
 
-        if depth_limit == 0:  # I don't know if the tests are sending depth as 0 or 1 for level 1
-            depth_limit = 1
+        if depth == 0:  # I don't know if the tests are sending depth as 0 or 1 for level 1
+            depth = 1
 
-        (move_score, best_move) = self.max_value(game, depth_limit, 1, alpha, beta)
-
+        try:
+            for depth_limit in range(depth):
+                if self.time_left() < self.TIMER_THRESHOLD:
+                    break
+                (move_score, best_move) = self.max_value(game, depth_limit+1, 1, alpha, beta)
+        except SearchTimeout:
+            return best_move
         return best_move
 
     def max_value(self,game, depth_limit,level_to_evaluate,alpha,beta):

@@ -94,7 +94,7 @@ class TestAlphaBetaPlayer(unittest.TestCase):
 
 
     def reset_boards(self):
-        self.my_player = game_agent.AlphaBetaPlayer(2,sample_players.open_move_score,10)
+        self.my_player = game_agent.AlphaBetaPlayer(1,sample_players.open_move_score,10)
         self.opponent = sample_players.GreedyPlayer(sample_players.open_move_score)
         self.game_board_1 = TestBoard(self.my_player, self.opponent,9,9)
         self.game_board_2 = TestBoard(self.opponent,self.my_player,9,9)
@@ -111,12 +111,24 @@ class TestAlphaBetaPlayer(unittest.TestCase):
     def setUp(self):
         reload(game_agent)
         self.reset_boards()
+
+    def test_start_with_empty_board_one_move(self):
+        self.reset_boards()
+#        self.game_board_1._board_state = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, None, None]
+        self.assertIn(self.game_board_1.play(2000,1)[2],["game-on","player_1 wins","player_2 wins"],"Your agent timed out or made illegal move")
+"""
+
     def test_why_given_board_is_forfeit(self):
         self.reset_boards()
-        self.game_board_1._board_state = [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,0,0,1,1,0,1,1,0,0,0,0,1,0,0,0,1,1,0,0,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,0,0,1,0,1,1,1,0,1,1,0,1,0,0,0,0,1,0,46,71,24]
+        self.game_board_1._board_state = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 21]
         self.assertIn(self.game_board_1.play(2000)[2],["player_1 wins","player_2 wins"],"Your agent timed out or made illegal move")
 
-"""
+
+    def test_start_with_empty_board(self):
+        self.reset_boards()
+        self.game_board_1._board_state = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, None, None]
+        self.assertIn(self.game_board_1.play(2000)[2],["player_1 wins","player_2 wins"],"Your agent timed out or made illegal move")
+
     def test_can_make_one_valid_move(self):
         self.assertEqual(self.game_board_1.play(2000,1)[2],"game-on","Your agent cant make even a single valid move")
 
